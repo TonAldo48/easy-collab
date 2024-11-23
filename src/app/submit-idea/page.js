@@ -1,21 +1,47 @@
-/*
-  This example requires some changes to your config:
-  
-  ```
-  // tailwind.config.js
-  module.exports = {
-    // ...
-    plugins: [
-      // ...
-      require('@tailwindcss/forms'),
-    ],
-  }
-  ```
-*/
-import {PhotoIcon, UserCircleIcon} from "@heroicons/react/24/solid";
+"use client";
+
+import { useState } from "react";
 import Navbar from "../../components/navbar";
 
 export default function Example() {
+    const [title, setTitle] = useState("");
+    const [description, setDescription] = useState("");
+    const [technologies, setTechnologies] = useState("");
+    const [lookingFor, setLookingFor] = useState("");
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        try {
+            const response = await fetch("/api/submitIdea", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    title,
+                    description,
+                    technologies,
+                    lookingFor,
+                }),
+            });
+
+            if (response.ok) {
+                alert("Project submitted successfully!");
+                // Clear form inputs if needed
+                setTitle("");
+                setDescription("");
+                setTechnologies("");
+                setLookingFor("");
+            } else {
+                alert("Failed to submit the project. Please try again.");
+            }
+        } catch (error) {
+            console.error("Error submitting the form:", error);
+            alert("An error occurred while submitting the form.");
+        }
+    };
+
     return (
         <>
             <Navbar />
@@ -46,12 +72,13 @@ export default function Example() {
                                                     {/* workcation.com/ */}
                                                 </span>
                                                 <input
-                                                    id="username"
-                                                    name="username"
-                                                    type="text"
-                                                    placeholder=""
-                                                    // autoComplete=""
-                                                    className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm/6"
+                                                   id="title"
+                                                   name="title"
+                                                   type="text"
+                                                   value={title}
+                                                   onChange={(e) => setTitle(e.target.value)}
+                                                   className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm/6"
+                                                   required
                                                 />
                                             </div>
                                         </div>
@@ -66,11 +93,13 @@ export default function Example() {
                                         </label>
                                         <div className="mt-2">
                                             <textarea
-                                                id="about"
-                                                name="about"
-                                                rows={3}
-                                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
-                                                defaultValue={""}
+                                               id="description"
+                                               name="description"
+                                               rows={3}
+                                               value={description}
+                                               onChange={(e) => setDescription(e.target.value)}
+                                               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
+                                               required
                                             />
                                         </div>
                                         <p className="mt-3 text-sm/6 text-gray-600">
@@ -100,7 +129,7 @@ export default function Example() {
                                         </div>
                                     </div> */}
 
-                                    <div className="col-span-full">
+                                    {/* <div className="col-span-full">
                                         <label
                                             htmlFor="cover-photo"
                                             className="block text-sm/6 font-medium text-gray-900"
@@ -137,7 +166,7 @@ export default function Example() {
                                                 </p>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
 
@@ -324,16 +353,38 @@ export default function Example() {
                                                     id="technologies"
                                                     name="technologies"
                                                     type="text"
-                                                    placeholder=""
-                                                    // autoComplete=""
-                                                    className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm/6"
-                                                />
+                                                    value={technologies}
+                                                    onChange={(e) => setTechnologies(e.target.value)}
+                                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
+                                                  />
                                             </div>
+                                        </div>
+                                        <div className="mt-4 space-y-2">
+                                            <h2 className="text-base/7 font-semibold text-gray-900">
+                                                Who are you looking for?
+                                            </h2>
+
+                                            <div className="mt-2">
+                                                <textarea
+                                                    id="lookingFor"
+                                                    name="lookingFor"
+                                                    rows={3}
+                                                    value={lookingFor}
+                                                    onChange={(e) => setLookingFor(e.target.value)}
+                                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
+                                                  />
+                                            </div>
+                                            <p className="mt-3 text-sm/6 text-gray-600">
+                                                This should be a short
+                                                description of the people you
+                                                want to join the project.
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
-                                <div className="mt-10 space-y-10">
-                                    <fieldset>
+
+                                {/* <div className="mt-10 space-y-10"> */}
+                                {/* <fieldset>
                                         <legend className="text-sm/6 font-semibold text-gray-900">
                                             By Email
                                         </legend>
@@ -461,10 +512,14 @@ export default function Example() {
                                                 </label>
                                             </div>
                                         </div>
-                                    </fieldset>
-                                </div>
+                                    </fieldset> */}
+                                {/* </div> */}
                             </div>
                         </div>
+
+                        {/* <div className="col-span-full"> */}
+
+                        {/* </div> */}
 
                         <div className="mt-6 flex items-center justify-end gap-x-6">
                             <button
@@ -477,7 +532,7 @@ export default function Example() {
                                 type="submit"
                                 className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                             >
-                                Save
+                                Submit Project
                             </button>
                         </div>
                     </form>
