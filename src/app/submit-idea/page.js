@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import {useState} from "react";
 import Navbar from "../../components/navbar";
 
 export default function Example() {
@@ -47,7 +47,7 @@ export default function Example() {
             <Navbar />
             <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
                 <div className="sm:mx-auto sm:w-[40vw]">
-                    <form>
+                    <form onSubmit={handleSubmit}>
                         <div className="space-y-12">
                             <div className="border-b border-gray-900/10 pb-12">
                                 <h2 className="text-base/7 font-semibold text-gray-900">
@@ -72,13 +72,15 @@ export default function Example() {
                                                     {/* workcation.com/ */}
                                                 </span>
                                                 <input
-                                                   id="title"
-                                                   name="title"
-                                                   type="text"
-                                                   value={title}
-                                                   onChange={(e) => setTitle(e.target.value)}
-                                                   className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm/6"
-                                                   required
+                                                    id="title"
+                                                    name="title"
+                                                    type="text"
+                                                    value={title}
+                                                    onChange={(e) =>
+                                                        setTitle(e.target.value)
+                                                    }
+                                                    className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm/6"
+                                                    required
                                                 />
                                             </div>
                                         </div>
@@ -93,13 +95,17 @@ export default function Example() {
                                         </label>
                                         <div className="mt-2">
                                             <textarea
-                                               id="description"
-                                               name="description"
-                                               rows={3}
-                                               value={description}
-                                               onChange={(e) => setDescription(e.target.value)}
-                                               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
-                                               required
+                                                id="description"
+                                                name="description"
+                                                rows={3}
+                                                value={description}
+                                                onChange={(e) =>
+                                                    setDescription(
+                                                        e.target.value
+                                                    )
+                                                }
+                                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
+                                                required
                                             />
                                         </div>
                                         <p className="mt-3 text-sm/6 text-gray-600">
@@ -354,9 +360,13 @@ export default function Example() {
                                                     name="technologies"
                                                     type="text"
                                                     value={technologies}
-                                                    onChange={(e) => setTechnologies(e.target.value)}
+                                                    onChange={(e) =>
+                                                        setTechnologies(
+                                                            e.target.value
+                                                        )
+                                                    }
                                                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
-                                                  />
+                                                />
                                             </div>
                                         </div>
                                         <div className="mt-4 space-y-2">
@@ -370,9 +380,13 @@ export default function Example() {
                                                     name="lookingFor"
                                                     rows={3}
                                                     value={lookingFor}
-                                                    onChange={(e) => setLookingFor(e.target.value)}
+                                                    onChange={(e) =>
+                                                        setLookingFor(
+                                                            e.target.value
+                                                        )
+                                                    }
                                                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
-                                                  />
+                                                />
                                             </div>
                                             <p className="mt-3 text-sm/6 text-gray-600">
                                                 This should be a short
