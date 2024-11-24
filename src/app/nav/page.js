@@ -37,7 +37,7 @@ export default function Nav() {
 
         {/* View Ideas Button */}
         <button
-          onClick={() => handleNavigation("/submit-ideas")}
+          onClick={() => handleNavigation("/view-ideas")}
           className="px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-500 focus:ring-2 focus:ring-green-300 focus:ring-offset-2"
         >
           View Ideas
