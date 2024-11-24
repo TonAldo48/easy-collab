@@ -1,8 +1,6 @@
 "use client";
 import {useState} from "react";
 import Navbar from "../../components/navbar";
-import Markdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 
 export default function GetRecommendation() {
     const [userInput, setUserInput] = useState("");
@@ -39,7 +37,7 @@ export default function GetRecommendation() {
             }
 
             console.log("[DEBUG] API response data:", result);
-            setAnalysis(result.analysis); // Ensure this is a plain string or pre-processed correctly.
+            setAnalysis(result.analysis); // Ensure this is pre-formatted or safe HTML.
         } catch (err) {
             console.error("[ERROR] Failed to get recommendations:", err);
             setError(
@@ -126,12 +124,12 @@ export default function GetRecommendation() {
                                 <h3 className="text-xl font-bold mb-2">
                                     Recommended Projects:
                                 </h3>
-                                <div className="prose max-w-none bg-white p-4 rounded-lg shadow">
-                                    {/* Ensure analysis is a string */}
-                                    <Markdown remarkPlugins={[remarkGfm]}>
-                                        {analysis}
-                                    </Markdown>
-                                </div>
+                                <div
+                                    className="prose max-w-none bg-white p-4 rounded-lg shadow"
+                                    // Replace analysis with trusted HTML or plain text.
+                                    dangerouslySetInnerHTML={{__html: analysis}}
+                                ></div>
+
                                 {/* Notion Link */}
                                 <div className="mt-4">
                                     <a
