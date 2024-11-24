@@ -1,3 +1,4 @@
+
 import {
     Disclosure,
     DisclosureButton,
@@ -9,18 +10,18 @@ import {
 } from "@headlessui/react";
 import {Bars3Icon, BellIcon, XMarkIcon} from "@heroicons/react/24/outline";
 
-const navigation = [
-    {name: "Submit Idea", href: "#", current: true},
-    // {name: "Team", href: "#", current: false},
-    // {name: "Projects", href: "#", current: false},
-    // {name: "Calendar", href: "#", current: false},
-];
-
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
 
-export default function Navbar() {
+export default function Navbar({currentTab}) {
+    const navigation = [
+        {name: "Submit Idea", href: "/submit-idea", key: "submit-idea"},
+        {name: "View Ideas", href: "/view-ideas", key: "view-ideas"},
+        // {name: "Projects", href: "#", key: "projects"},
+        // {name: "Calendar", href: "#", key: "calendar"},
+    ];
+
     return (
         <Disclosure as="nav" className="bg-black">
             <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
