@@ -30,7 +30,7 @@ export default function Nav() {
         {/* Submit Idea Button */}
         <button
           onClick={() => handleNavigation("/submit-idea")}
-          className="px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-500 focus:ring-2 focus:ring-indigo-300 focus:ring-offset-2"
+          className="px-6 py-3 bg-gray-800 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-500 focus:ring-2 focus:ring-black-300 focus:ring-offset-2"
         >
           Submit an Idea
         </button>
@@ -38,7 +38,7 @@ export default function Nav() {
         {/* View Ideas Button */}
         <button
           onClick={() => handleNavigation("/view-ideas")}
-          className="px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-500 focus:ring-2 focus:ring-green-300 focus:ring-offset-2"
+          className="px-6 py-3 bg-gray-800 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-500 focus:ring-2 focus:ring-green-300 focus:ring-offset-2"
         >
           View Ideas
         </button>
