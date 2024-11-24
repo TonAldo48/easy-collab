@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import {useState, useEffect} from "react";
 import Navbar from "../../components/navbar";
 
 export default function ProjectIdeasListing() {
@@ -24,7 +24,9 @@ export default function ProjectIdeasListing() {
                 }
             } catch (error) {
                 console.error("Error fetching project ideas:", error);
-                setError("Failed to load project ideas. Please try again later.");
+                setError(
+                    "Failed to load project ideas. Please try again later."
+                );
             } finally {
                 setLoading(false);
             }
@@ -76,7 +78,7 @@ export default function ProjectIdeasListing() {
                                             <p className="text-gray-600  mb-4">
                                                 {project.description}
                                             </p>
-                                            
+
                                             {/* Technologies Used */}
                                             <div className="mb-4">
                                                 <span className="text-gray-700 font-bold">
@@ -98,7 +100,29 @@ export default function ProjectIdeasListing() {
                                             </div> */}
 
                                             {/* View More Button */}
-                                            <button className="mt-4 inline-flex items-center px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                            <button
+                                                onClick={() => {
+                                                    const notionBaseUrl =
+                                                        process.env
+                                                            .NEXT_PUBLIC_NOTION_BASE_URL;
+                                                    const formattedTitle =
+                                                        project.title.replace(
+                                                            /\s+/g,
+                                                            "-"
+                                                        ); // Replace spaces with dashes
+                                                    const sanitizedId =
+                                                        project.id.replace(
+                                                            /-/g,
+                                                            ""
+                                                        ); // Remove dashes from the ID
+                                                    const projectUrl = `${notionBaseUrl}/${formattedTitle}-${sanitizedId}`;
+                                                    window.open(
+                                                        projectUrl,
+                                                        "_blank"
+                                                    ); // Opens in a new tab
+                                                }}
+                                                className="mt-4 inline-flex items-center px-4 py-2 bg-gray-800 text-white font-semibold rounded-lg hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                            >
                                                 View More
                                             </button>
                                         </div>
