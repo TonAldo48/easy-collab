@@ -30,7 +30,11 @@ export default function Nav() {
         {/* Submit Idea Button */}
         <button
           onClick={() => handleNavigation("/submit-idea")}
+<<<<<<< HEAD
           className="px-6 py-3 bg-gray-800 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-500 focus:ring-2 focus:ring-black-300 focus:ring-offset-2"
+=======
+          className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+>>>>>>> 175107c7d10dc5b3a87064d09dd9aa5d391c37db
         >
           Submit an Idea
         </button>
@@ -38,7 +42,11 @@ export default function Nav() {
         {/* View Ideas Button */}
         <button
           onClick={() => handleNavigation("/view-ideas")}
+<<<<<<< HEAD
           className="px-6 py-3 bg-gray-800 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-500 focus:ring-2 focus:ring-green-300 focus:ring-offset-2"
+=======
+          className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+>>>>>>> 175107c7d10dc5b3a87064d09dd9aa5d391c37db
         >
           View Ideas
         </button>
