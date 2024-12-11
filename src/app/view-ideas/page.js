@@ -12,21 +12,24 @@ export default function ProjectIdeasListing() {
         async function fetchProjects() {
             try {
                 const response = await fetch("/api/getProjects");
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
                 const data = await response.json();
 
-                // Debugging: Check the fetched data structure
+                // Debug log
                 console.log("Fetched data:", data);
 
-                if (Array.isArray(data)) {
-                    setProjects(data);
-                } else {
-                    throw new Error("Data fetched is not an array");
+                // Check if data is an array
+                if (!Array.isArray(data)) {
+                    console.error("Data structure:", data);
+                    throw new Error("Data fetched is not in the expected format");
                 }
+
+                setProjects(data);
             } catch (error) {
                 console.error("Error fetching project ideas:", error);
-                setError(
-                    "Failed to load project ideas. Please try again later."
-                );
+                setError("Failed to load project ideas. Please try again later.");
             } finally {
                 setLoading(false);
             }
