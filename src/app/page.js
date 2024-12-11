@@ -44,7 +44,7 @@ export default function Home() {
       <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
         <a
           className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="#"
+          href="https://easycollab.notion.site/1479867e2dc880959eb7f47f587df44a?v=534eeaee9a7b45f784ff5b0cb9cba345"
           target="_self"
           rel="noopener noreferrer"
         >
