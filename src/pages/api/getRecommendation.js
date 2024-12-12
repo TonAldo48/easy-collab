@@ -1,137 +1,120 @@
-"use client";
-import {useState} from "react";
-import Navbar from "../../components/navbar";
+import { Client } from "@notionhq/client";
+import OpenAI from 'openai';
 
-export default function GetRecommendation() {
-    const [userInput, setUserInput] = useState("");
-    const [loading, setLoading] = useState(false);
-    const [recommendation, setRecommendation] = useState(null);
-    const [error, setError] = useState(null);
+const notion = new Client({ auth: process.env.NOTION_API_KEY });
+const databaseId = process.env.NOTION_DATABASE_ID;
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setError(null);
-        setRecommendation(null);
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ message: 'Method not allowed' });
+  }
 
-        try {
-            const response = await fetch("/api", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({userInput}),
-            });
+  try {
+    const { userInput, filters } = req.body;
+    
+    if (!userInput) {
+      return res.status(400).json({ message: 'User input is required' });
+    }
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(
-                    errorData.error || "Failed to fetch recommendation."
-                );
-            }
+    // Get all projects from Notion with filters
+    const response = await notion.databases.query({
+      database_id: databaseId,
+      filter: {
+        and: buildNotionFilters(filters)
+      }
+    });
 
-            const data = await response.json();
-            setRecommendation(data.recommended_project_id);
-        } catch (err) {
-            console.error(err);
-            setError(
-                err.message ||
-                    "Could not get a recommendation. Please try again later."
-            );
-        } finally {
-            setLoading(false);
+    // Convert projects to searchable format
+    const projects = response.results.map(page => ({
+      id: page.id,
+      title: page.properties.Name.title[0]?.plain_text || '',
+      description: page.properties.Description.rich_text[0]?.plain_text || '',
+      technologies: page.properties.Technologies.multi_select.map(tech => tech.name) || [],
+      difficulty: page.properties.Difficulty.select?.name || '',
+      lookingFor: page.properties['Looking For'].rich_text[0]?.plain_text || '',
+    }));
+
+    // Use OpenAI to get recommendations
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        {
+          role: "system",
+          content: `You are a project recommendation assistant. Your task is to analyze user interests and skills to recommend suitable projects.
+Consider:
+- Technical skill requirements
+- Project difficulty level
+- Technology stack alignment
+- Project scope and complexity
+
+Return recommendations in this exact format (no additional text):
+{
+  "recommendations": [
+    {
+      "id": "project_id",
+      "explanation": "Detailed explanation of why this project matches"
+    }
+  ]
+}
+
+Recommend exactly 3 projects (or fewer if not enough matches).`
+        },
+        {
+          role: "user",
+          content: `Available projects:\n${JSON.stringify(projects, null, 2)}\n\nUser interests and skills: ${userInput}`
         }
-    };
+      ],
+      temperature: 0.7,
+      max_tokens: 1000
+    });
 
-    return (
-        <>
-            <div className="min-h-full">
-                {/* Navbar */}
-                <Navbar currentTab={"get-recommendation"} />
+    try {
+      const aiResponse = JSON.parse(completion.choices[0].message.content);
+      
+      // Match AI recommendations with full project details
+      const recommendations = aiResponse.recommendations.map(rec => ({
+        ...projects.find(p => p.id === rec.id),
+        explanation: rec.explanation
+      }));
 
-                {/* Page Header */}
-                <header className="bg-white shadow">
-                    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-                        <h1 className="text-3xl font-bold tracking-tight text-gray-900">
-                            Get a Project Recommendation
-                        </h1>
-                        <p className="mt-2 text-lg text-gray-600">
-                            Describe your interests, and we'll recommend a
-                            suitable project.
-                        </p>
-                    </div>
-                </header>
+      return res.status(200).json({ recommendations });
+    } catch (parseError) {
+      console.error('Error parsing OpenAI response:', parseError);
+      return res.status(500).json({ message: 'Error processing AI response' });
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    return res.status(500).json({ message: 'Error processing recommendation' });
+  }
+}
 
-                {/* Main Content */}
-                <main>
-                    <div className="mx-auto max-w-3xl px-4 py-6 sm:px-6 lg:px-8">
-                        <form
-                            onSubmit={handleSubmit}
-                            className="space-y-8 bg-white p-6 shadow-md rounded-lg"
-                        >
-                            {/* User Input Field */}
-                            <div>
-                                <label
-                                    htmlFor="userInput"
-                                    className="block text-sm font-medium text-gray-700"
-                                >
-                                    Describe your interests
-                                </label>
-                                <div className="mt-1">
-                                    <textarea
-                                        id="userInput"
-                                        name="userInput"
-                                        rows={4}
-                                        required
-                                        value={userInput}
-                                        onChange={(e) =>
-                                            setUserInput(e.target.value)
-                                        }
-                                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                        placeholder="Tell us about your passions, skills, and goals..."
-                                    />
-                                </div>
-                            </div>
+function buildNotionFilters(filters = {}) {
+  const notionFilters = [];
+  
+  if (filters.difficulty) {
+    notionFilters.push({
+      property: "Difficulty",
+      select: {
+        equals: filters.difficulty
+      }
+    });
+  }
 
-                            {/* Submit Button */}
-                            <div className="flex items-center justify-end">
-                                <button
-                                    type="submit"
-                                    disabled={loading}
-                                    className={`inline-flex items-center px-4 py-2 font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-                                        loading
-                                            ? "bg-indigo-400 cursor-not-allowed"
-                                            : "bg-indigo-600 hover:bg-indigo-500 focus:ring-indigo-500 text-white"
-                                    }`}
-                                >
-                                    {loading
-                                        ? "Finding Recommendation..."
-                                        : "Get Recommendation"}
-                                </button>
-                            </div>
-                        </form>
+  if (filters.technologies && filters.technologies.length > 0) {
+    const techFilters = filters.technologies.map(tech => ({
+      property: "Technologies",
+      multi_select: {
+        contains: tech
+      }
+    }));
+    
+    if (techFilters.length > 0) {
+      notionFilters.push({
+        or: techFilters
+      });
+    }
+  }
 
-                        {/* Recommendation Section */}
-                        {recommendation && (
-                            <div className="mt-8 p-6 bg-green-100 text-green-800 rounded-md shadow-md">
-                                <h3 className="text-xl font-bold mb-2">
-                                    Recommended Project ID:
-                                </h3>
-                                <p className="text-lg font-semibold text-gray-900">
-                                    {recommendation}
-                                </p>
-                            </div>
-                        )}
-
-                        {/* Error Message */}
-                        {error && (
-                            <div className="mt-4 p-4 text-center bg-red-100 text-red-800 rounded-md">
-                                {error}
-                            </div>
-                        )}
-                    </div>
-                </main>
-            </div>
-        </>
-    );
+  return notionFilters;
 }

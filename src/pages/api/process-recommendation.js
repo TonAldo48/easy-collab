@@ -76,7 +76,7 @@ export async function POST(request) {
 
     // Send request to OpenAI
     const completion = await openai.chat.completions.create({
-      model: "gpt-4", // Specify the model
+      model: "gpt-4o", // Specify the model
       messages,
       temperature: 0.7, // Adjust for creativity
       max_tokens: 500, // Limit response size

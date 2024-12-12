@@ -1,141 +1,105 @@
 "use client";
 
-import {useState, useEffect} from "react";
+import { useState, useEffect } from "react";
 import Navbar from "../../components/navbar";
+import { useAuth } from "../../contexts/AuthContext";
+import LoadingSpinner from "../../components/LoadingSpinner";
+import DifficultyBadge from "../../components/DifficultyBadge";
 
 export default function ProjectIdeasListing() {
-    const [projects, setProjects] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const { user } = useAuth();
 
-    useEffect(() => {
-        async function fetchProjects() {
-            try {
-                const response = await fetch("/api/getProjects");
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const data = await response.json();
-
-                // Debug log
-                console.log("Fetched data:", data);
-
-                // Check if data is an array
-                if (!Array.isArray(data)) {
-                    console.error("Data structure:", data);
-                    throw new Error("Data fetched is not in the expected format");
-                }
-
-                setProjects(data);
-            } catch (error) {
-                console.error("Error fetching project ideas:", error);
-                setError("Failed to load project ideas. Please try again later.");
-            } finally {
-                setLoading(false);
-            }
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const response = await fetch('/api/getProjects');
+        if (!response.ok) {
+          throw new Error('Failed to fetch projects');
         }
+        const data = await response.json();
+        setProjects(data);
+      } catch (err) {
+        setError('Error loading projects. Please try again later.');
+        console.error('Error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-        fetchProjects();
-    }, []);
+    fetchProjects();
+  }, []);
 
-    return (
-        <>
-            <div className="min-h-full">
-                {/* Navbar with currentTab set to 'view-ideas' */}
-                <Navbar currentTab={"view-ideas"} />
+  return (
+    <div className="min-h-full">
+      <Navbar currentTab={"view-ideas"} />
+      
+      <header className="bg-white shadow">
+        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+            Projects and Ideas
+          </h1>
+          <p className="mt-2 text-lg text-gray-600">
+            Explore innovative project ideas and find opportunities to collaborate.
+          </p>
+        </div>
+      </header>
 
-                {/* Header section */}
-                <header className="bg-white shadow">
-                    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-                        <h1 className="text-3xl font-bold tracking-tight text-gray-900">
-                            Projects and Ideas
-                        </h1>
-                        <p className="mt-2 text-lg text-gray-600">
-                            Explore our collection of innovative ideas that you
-                            can contribute to.
-                        </p>
-                    </div>
-                </header>
+      <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <LoadingSpinner />
+          </div>
+        ) : error ? (
+          <div className="text-red-500 text-center p-4 bg-red-50 rounded-lg">
+            {error}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {projects.map((project) => (
+              <div
+                key={project.id}
+                onClick={() => {
+                  const notionBaseUrl = process.env.NEXT_PUBLIC_NOTION_BASE_URL;
+                  const formattedTitle = project.title.replace(/\s+/g, "-");
+                  const sanitizedId = project.id.replace(/-/g, "");
+                  window.open(`${notionBaseUrl}/${formattedTitle}-${sanitizedId}`, "_blank");
+                }}
+                className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer border border-gray-100"
+              >
+                <div className="p-6">
+                  <h2 className="text-xl font-semibold text-gray-900 mb-2">
+                    {project.title}
+                  </h2>
+                  <p className="text-gray-600 line-clamp-2 text-sm mb-4">
+                    {project.description}
+                  </p>
 
-                {/* Main content */}
-                <main>
-                    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-                        {loading ? (
-                            <p className="text-gray-700">Loading projects...</p>
-                        ) : error ? (
-                            <p className="text-red-500">{error}</p>
-                        ) : (
-                            <div className="grid gap-8 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1">
-                                {projects.map((project) => (
-                                    <div
-                                        key={project.id}
-                                        className="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 ease-in-out"
-                                    >
-                                        <div className="p-6">
-                                            {/* Project Title */}
-                                            <h3 className="text-2xl font-semibold text-gray-800 mb-2">
-                                                {project.title}
-                                            </h3>
+                  <div className="flex flex-wrap gap-1.5 mb-4">
+                    {project.technologies.map((tech, index) => (
+                      <span 
+                        key={index}
+                        className="px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700"
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
 
-                                            {/* Project Description */}
-                                            <p className="text-gray-600  mb-4">
-                                                {project.description}
-                                            </p>
-
-                                            {/* Technologies Used */}
-                                            <div className="mb-4">
-                                                <span className="text-gray-700 font-bold">
-                                                    Technologies:
-                                                </span>
-                                                <div className="flex flex-wrap gap-2 mt-1">
-                                                    {project.technologies}
-                                                </div>
-                                            </div>
-
-                                            {/* Looking For */}
-                                            {/* <div className="mb-4">
-                                                <span className="text-gray-700 font-medium">
-                                                    Looking For:
-                                                </span>
-                                                <p className="text-gray-600 mt-1">
-                                                    {project.lookingFor}
-                                                </p>
-                                            </div> */}
-
-                                            {/* View More Button */}
-                                            <button
-                                                onClick={() => {
-                                                    const notionBaseUrl =
-                                                        process.env
-                                                            .NEXT_PUBLIC_NOTION_BASE_URL;
-                                                    const formattedTitle =
-                                                        project.title.replace(
-                                                            /\s+/g,
-                                                            "-"
-                                                        ); // Replace spaces with dashes
-                                                    const sanitizedId =
-                                                        project.id.replace(
-                                                            /-/g,
-                                                            ""
-                                                        ); // Remove dashes from the ID
-                                                    const projectUrl = `${notionBaseUrl}/${formattedTitle}-${sanitizedId}`;
-                                                    window.open(
-                                                        projectUrl,
-                                                        "_blank"
-                                                    ); // Opens in a new tab
-                                                }}
-                                                className="mt-4 inline-flex items-center px-4 py-2 bg-gray-800 text-white font-semibold rounded-lg hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                            >
-                                                View More
-                                            </button>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                </main>
-            </div>
-        </>
-    );
+                  <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                    <DifficultyBadge difficulty={project.difficulty} />
+                    <span className="text-sm text-gray-600">
+                      {project.lookingFor}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </main>
+    </div>
+  );
 }
