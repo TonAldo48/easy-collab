@@ -2,8 +2,6 @@
 
 EasyCollab is a web platform that helps developers find collaborators for their projects. Users can submit project ideas, browse existing projects, and connect with potential collaborators.
 
-![EasyCollab Logo](/public/easycollab.png)
-
 ## Features
 
 - 🔐 **User Authentication**: Secure email/password authentication using Firebase
@@ -17,7 +15,7 @@ EasyCollab is a web platform that helps developers find collaborators for their 
 
 - **Frontend**: Next.js 13+ (App Router), React, TailwindCSS
 - **Authentication**: Firebase Authentication
-- **Database**: Notion API
+- **Database**: Notion Database
 - **Styling**: Tailwind CSS, HeadlessUI
 - **Icons**: Heroicons
 
