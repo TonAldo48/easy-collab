@@ -1,6 +1,7 @@
 import localFont from "next/font/local";
 import "./globals.css";
 import { AuthProvider } from '../contexts/AuthContext';
+import { Analytics } from "@vercel/analytics/react"
 
 
 const geistSans = localFont({
@@ -27,6 +28,7 @@ export default function RootLayout({ children }) {
       >
         <AuthProvider>
           {children}
+          <Analytics />
         </AuthProvider>
       </body>
     </html>
