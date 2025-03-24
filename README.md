@@ -1,4 +1,4 @@
-# EasyCollab
+# EasyCollab <a name="overview">
 
 EasyCollab is a web platform that helps developers find collaborators for their projects. Users can submit project ideas, browse existing projects, and connect with potential collaborators.
 
